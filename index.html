@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda</title>
+</head>
+<body>
+    <h1>Productos disponibles:</h1>
+    <div id="productos"></div>
+    <h1>Nuevo producto</h1>
+    <form>
+        <label for="producto">JSON Producto</label>
+        <textarea id="producto"></textarea>
+        <button id="agregar">Agregar</button>
+    </form>
+    <h1>Buscar producto</h1>
+    <form>
+        <label for="producto1">ID Producto</label>
+        <textarea id="producto1"></textarea>
+        <button id="agregar1">Buscar</button>
+    </form>
+    <div id="buscarProducto"></div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $.ajax({
+            type: 'GET',
+            url: 'https://ok3uabcpi4.execute-api.us-east-1.amazonaws.com/prod/products',
+            success: function(data) {
+                $('#productos').html('');
+                data.Items.forEach(function(producto){
+                    $('#productos').append('<p> Nombre: ' + producto.productName + '</p></br>' + '<p> Precio: ' + producto.price + '</p></br>' + '<p> Inventario: ' + producto.inventory + '</p></br></br>');
+                })
+            }
+        });
+    });
+    $('#agregar').on('click', function(){
+        $.ajax({
+            type: 'POST',
+            url: 'https://ok3uabcpi4.execute-api.us-east-1.amazonaws.com/prod/product',
+            data: JSON.stringify({"message": $('#producto').val()}),
+            contentType: "application/json",
+            success: function(data) {
+                location.reload();
+                console.log("Producto cargado exitosamente");
+            }
+        })
+        return false;
+    });
+    $('#agregar1').on('click', function(){
+        $.ajax({
+            type: 'GET',
+            url: 'https://ok3uabcpi4.execute-api.us-east-1.amazonaws.com/prod/product?productId' + $('#producto1').val(),
+            success: function(data) {
+                $('#buscarProducto').html('');
+                data.Items[0](function(producto){
+                    $('#buscarProducto').append('<p> Nombre: ' + producto.productName + '</p></br>' + '<p> Precio: ' + producto.price + '</p></br>' + '<p> Inventario: ' + producto.inventory + '</p></br></br>');
+                })
+            }
+        })
+        return false;
+    });
+</script>
+</html>
